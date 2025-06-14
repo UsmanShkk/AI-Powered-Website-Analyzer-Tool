@@ -71,7 +71,7 @@ Auto-generate a summary brochure using your business’s public web presence.
 |-------------|----------------|
 | Backend     | FastAPI        |
 | Frontend    | HTML, CSS      |
-| AI Models   | Gemini API, OpenAI (ChatGPT), LLaMA 3.2 |
+| AI Models   | Gemini API, LLaMA 3.2 |
 | Language    | Python 3.10+   |
 | Style & UX  | Minimal UI with smooth gradients |
 
