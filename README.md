@@ -77,10 +77,4 @@ Auto-generate a summary brochure using your business’s public web presence.
 
 ---
 
-## 🚀 How to Run
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/your-username/website-analyzer.git
-cd website-analyzer
