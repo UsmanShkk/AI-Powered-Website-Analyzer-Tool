@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Analyzer - AI-Powered Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .analyzer-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .analysis-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-text {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .result-text h1, .result-text h2, .result-text h3 {
+            color: #333;
+            margin: 20px 0 10px 0;
+        }
+
+        .result-text ul, .result-text ol {
+            margin: 10px 0 10px 20px;
+        }
+
+        .result-text li {
+            margin: 5px 0;
+        }
+
+        .result-text strong {
+            color: #667eea;
+        }
+
+        .result-text code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .error {
+            background: #fee;
+            color: #d63031;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #d63031;
+            margin: 15px 0;
+        }
+
+        .success {
+            background: #e8f5e8;
+            color: #00b894;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #00b894;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .analyzer-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Website Analyzer</h1>
+            <p>AI-Powered Website Analysis & Marketing Intelligence</p>
+        </div>
+
+        <div class="analyzer-card">
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="url">Website URL</label>
+                    <input type="url" id="url" placeholder="https://example.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="analysisType">Analysis Type</label>
+                    <select id="analysisType">
+                        <option value="all">Complete Analysis</option>
+                        <option value="seo">SEO Analysis</option>
+                        <option value="audit">Website Audit</option>
+                        <option value="content">Content Ideas</option>
+                        <option value="social">Social Media Strategy</option>
+                        <option value="email">Email Campaigns</option>
+                        <option value="contact">Contact Info</option>
+                        <option value="brochure">Company Brochure</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="analysis-buttons">
+                <button class="btn" onclick="startAnalysis()">🔍 Start Analysis</button>
+                <button class="btn" onclick="clearResults()">🗑️ Clear Results</button>
+            </div>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing website... This may take a few minutes.</p>
+            </div>
+
+            <div class="results" id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let currentJobId = null;
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showResults(show) {
+            document.getElementById('results').style.display = show ? 'block' : 'none';
+        }
+
+        function showMessage(message, type = 'error') {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            showResults(true);
+        }
+
+        function formatContent(content) {
+            if (!content) return '';
+            
+            // Convert markdown-like formatting to HTML
+            let formatted = content
+                .replace(/### (.*?)(?=\n|$)/g, '<h3>$1</h3>')
+                .replace(/## (.*?)(?=\n|$)/g, '<h2>$1</h2>')
+                .replace(/# (.*?)(?=\n|$)/g, '<h1>$1</h1>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n- (.*?)(?=\n|$)/g, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+                .replace(/\n\d+\. (.*?)(?=\n|$)/g, '<li>$1</li>')
+                .replace(/\n/g, '<br>');
+
+            return `<p>${formatted}</p>`;
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            let html = '';
+
+            // Handle complete analysis results (from /analyze/complete)
+            if (data.results) {
+                for (const [type, content] of Object.entries(data.results)) {
+                    if (content && typeof content === 'string') {
+                        html += `
+                            <div class="result-content">
+                                <div class="result-title">
+                                    ${getAnalysisIcon(type)} ${getAnalysisTitle(type)}
+                                </div>
+                                <div class="result-text">
+                                    ${formatContent(content)}
+                                </div>
+                            </div>
+                        `;
+                    } else if (content && typeof content === 'object') {
+                        // Handle JSON responses (like contact info)
+                        html += `
+                            <div class="result-content">
+                                <div class="result-title">
+                                    ${getAnalysisIcon(type)} ${getAnalysisTitle(type)}
+                                </div>
+                                <div class="result-text">
+                                    <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; white-space: pre-wrap;">${JSON.stringify(content, null, 2)}</pre>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            } 
+            // Handle single analysis results (from individual endpoints)
+            else if (data.analysis) {
+                const type = data.type || 'analysis';
+                if (typeof data.analysis === 'string') {
+                    html = `
+                        <div class="result-content">
+                            <div class="result-title">
+                                ${getAnalysisIcon(type)} ${getAnalysisTitle(type)}
+                            </div>
+                            <div class="result-text">
+                                ${formatContent(data.analysis)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Handle JSON responses
+                    html = `
+                        <div class="result-content">
+                            <div class="result-title">
+                                ${getAnalysisIcon(type)} ${getAnalysisTitle(type)}
+                            </div>
+                            <div class="result-text">
+                                <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; white-space: pre-wrap;">${JSON.stringify(data.analysis, null, 2)}</pre>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            if (html) {
+                resultsDiv.innerHTML = html;
+                showResults(true);
+            } else {
+                showMessage('No results to display', 'error');
+            }
+        }
+
+        function getAnalysisIcon(type) {
+            const icons = {
+                seo: '🔍',
+                audit: '🔧',
+                content: '📝',
+                social: '📱',
+                email: '📧',
+                contact: '📞',
+                brochure: '📋',
+                competitors: '⚔️'
+            };
+            return icons[type] || '📊';
+        }
+
+        function getAnalysisTitle(type) {
+            const titles = {
+                seo: 'SEO Analysis',
+                audit: 'Website Audit',
+                content: 'Content Strategy',
+                social: 'Social Media Strategy',
+                email: 'Email Campaigns',
+                contact: 'Contact Information',
+                brochure: 'Company Brochure',
+                competitors: 'Competitor Analysis'
+            };
+            return titles[type] || 'Analysis Results';
+        }
+
+        async function startAnalysis() {
+            const url = document.getElementById('url').value.trim();
+            const analysisType = document.getElementById('analysisType').value;
+
+            if (!url) {
+                showMessage('Please enter a website URL', 'error');
+                return;
+            }
+
+            showLoading(true);
+            showResults(false);
+
+            try {
+                let endpoint = '';
+                let requestBody = { url };
+
+                // Map frontend options to backend endpoints exactly as defined in main.py
+                switch (analysisType) {
+                    case 'all':
+                        endpoint = '/analyze/complete';
+                        requestBody = { url, analysis_type: 'all' };
+                        break;
+                    case 'seo':
+                        endpoint = '/analyze/seo';
+                        break;
+                    case 'audit':
+                        endpoint = '/analyze/audit';
+                        break;
+                    case 'content':
+                        endpoint = '/analyze/content';
+                        requestBody = { url, content_type: 'blog' };
+                        break;
+                    case 'social':
+                        endpoint = '/analyze/social';
+                        requestBody = { url, platforms: ['LinkedIn', 'Twitter', 'Instagram'] };
+                        break;
+                    case 'email':
+                        endpoint = '/analyze/email';
+                        requestBody = { url, campaign_type: 'welcome_series' };
+                        break;
+                    case 'contact':
+                        endpoint = '/analyze/contact';
+                        break;
+                    case 'brochure':
+                        endpoint = '/analyze/brochure';
+                        requestBody = { url, humorous: false };
+                        break;
+                }
+
+                const response = await fetch(API_BASE + endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                if (data.job_id) {
+                    // Complete analysis - poll for results
+                    currentJobId = data.job_id;
+                    showMessage('Analysis started successfully! Checking progress...', 'success');
+                    pollJobStatus(data.job_id);
+                } else if (data.success && data.data) {
+                    // Single analysis - show results immediately
+                    displayResults(data.data);
+                    showLoading(false);
+                } else {
+                    throw new Error(data.message || 'Analysis failed');
+                }
+
+            } catch (error) {
+                showLoading(false);
+                console.error('Analysis error:', error);
+                showMessage(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function pollJobStatus(jobId) {
+            try {
+                const response = await fetch(`${API_BASE}/jobs/${jobId}`);
+                const job = await response.json();
+
+                if (job.status === 'completed') {
+                    showLoading(false);
+                    displayResults(job);
+                    currentJobId = null;
+                } else if (job.status === 'failed') {
+                    showLoading(false);
+                    showMessage(`Analysis failed: ${job.error}`, 'error');
+                    currentJobId = null;
+                } else {
+                    // Still running, check again in 3 seconds
+                    setTimeout(() => pollJobStatus(jobId), 3000);
+                }
+            } catch (error) {
+                showLoading(false);
+                showMessage(`Error checking job status: ${error.message}`, 'error');
+                currentJobId = null;
+            }
+        }
+
+        function clearResults() {
+            showResults(false);
+            showLoading(false);
+            currentJobId = null;
+        }
+
+        // Handle Enter key in URL input
+        document.getElementById('url').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startAnalysis();
+            }
+        });
+    </script>
+</body>
+</html>
